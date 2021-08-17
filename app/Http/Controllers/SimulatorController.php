@@ -60,8 +60,19 @@ class SimulatorController extends Controller
             "valor_parcela" => $simulator->brl2decimal($value->coeficiente * $loanValue),
             "convenio" => $value->convenio,
           ];  
-        }         
-        return response()->json($result);
+        }
+        //filtro por quantidade de parcelas         
+        $rep = array_map(function($values)use($quota){
+          return array_filter($values, function($value)use($quota){ 
+            if($quota){
+              return $value['parcelas'] == $quota;
+            }else{
+              return $value;
+            }
+          });          
+        }, $result);
+
+        return response()->json($rep);
     }
     
     /**
